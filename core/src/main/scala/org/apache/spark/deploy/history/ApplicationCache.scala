@@ -26,7 +26,7 @@ import scala.jdk.CollectionConverters._
 import com.codahale.metrics.{Counter, MetricRegistry, Timer}
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache, RemovalListener, RemovalNotification}
 import com.google.common.util.concurrent.UncheckedExecutionException
-import org.eclipse.jetty.servlet.FilterHolder
+import org.eclipse.jetty.ee8.servlet.FilterHolder
 
 import org.apache.spark.internal.Logging
 import org.apache.spark.metrics.source.Source

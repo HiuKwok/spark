@@ -20,7 +20,7 @@ package org.apache.spark.ui
 import java.util.Date
 import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 
-import org.eclipse.jetty.servlet.ServletContextHandler
+import org.eclipse.jetty.ee8.servlet.ServletContextHandler
 
 import org.apache.spark.{SecurityManager, SparkConf, SparkContext}
 import org.apache.spark.internal.Logging

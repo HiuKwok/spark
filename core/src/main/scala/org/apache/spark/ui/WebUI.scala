@@ -25,7 +25,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashMap
 import scala.xml.Node
 
-import org.eclipse.jetty.servlet.{FilterHolder, FilterMapping, ServletContextHandler, ServletHolder}
+import org.eclipse.jetty.ee8.servlet.{FilterHolder, FilterMapping, ServletContextHandler, ServletHolder}
 import org.json4s.JsonAST.{JNothing, JValue}
 
 import org.apache.spark.{SecurityManager, SparkConf, SSLOptions}

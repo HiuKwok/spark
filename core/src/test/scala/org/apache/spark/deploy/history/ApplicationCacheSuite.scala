@@ -23,7 +23,7 @@ import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.collection.mutable
 
 import com.codahale.metrics.Counter
-import org.eclipse.jetty.servlet.ServletContextHandler
+import org.eclipse.jetty.ee8.servlet.ServletContextHandler
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock

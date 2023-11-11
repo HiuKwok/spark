@@ -33,6 +33,16 @@
   <properties>
     <sbt.project.name>core</sbt.project.name>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.eclipse.jetty.ee8</groupId>
+        <artifactId>jetty-ee8-nested</artifactId>
+        <version>${jetty.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
   
   <dependencies>
     <dependency>
@@ -122,8 +132,13 @@
     <!-- Jetty dependencies promoted to compile here so they are shaded
          and inlined into spark-core jar -->
     <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-plus</artifactId>
+      <groupId>org.eclipse.jetty.ee8</groupId>
+      <artifactId>jetty-ee8-plus</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty.ee8</groupId>
+      <artifactId>jetty-ee8-nested</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -147,8 +162,8 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-servlet</artifactId>
+      <groupId>org.eclipse.jetty.ee8</groupId>
+      <artifactId>jetty-ee8-servlet</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -162,8 +177,8 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-servlets</artifactId>
+      <groupId>org.eclipse.jetty.ee8</groupId>
+      <artifactId>jetty-ee8-servlets</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>

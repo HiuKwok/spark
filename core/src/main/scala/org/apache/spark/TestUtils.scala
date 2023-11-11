@@ -43,11 +43,8 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
 import org.apache.logging.log4j.core.appender.ConsoleAppender
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory
-import org.eclipse.jetty.server.Handler
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.handler.DefaultHandler
-import org.eclipse.jetty.server.handler.HandlerList
-import org.eclipse.jetty.server.handler.ResourceHandler
 import org.json4s.JsonAST.JValue
 import org.json4s.jackson.JsonMethods.{compact, render}
 
@@ -330,11 +327,12 @@ private[spark] object TestUtils extends SparkTestUtils {
   def withHttpServer(resBaseDir: String = ".")(body: URL => Unit): Unit = {
     // 0 as port means choosing randomly from the available ports
     val server = new Server(new InetSocketAddress(Utils.localCanonicalHostName(), 0))
-    val resHandler = new ResourceHandler()
-    resHandler.setResourceBase(resBaseDir)
-    val handlers = new HandlerList()
-    handlers.setHandlers(Array[Handler](resHandler, new DefaultHandler()))
-    server.setHandler(handlers)
+//    val resHandler = new ResourceHandler()
+//    resHandler.setResourceBase(resBaseDir)
+//    val resources = new Resource(resBaseDir)
+//    val handlers = new HandlerList(Array[Handler](resHandler, new DefaultHandler()));
+//    handlers.setHandlers(Array[Handler](resHandler, new DefaultHandler()))
+    server.setDefaultHandler(new DefaultHandler())
     server.start()
     try {
       body(server.getURI.toURL)

@@ -20,7 +20,7 @@ package org.apache.spark.deploy.history
 import javax.servlet.http.HttpServletRequest
 
 import org.eclipse.jetty.proxy.ProxyServlet
-import org.eclipse.jetty.servlet.{ServletContextHandler, ServletHolder}
+import org.eclipse.jetty.ee8.servlet.{ServletContextHandler, ServletHolder}
 import org.openqa.selenium.WebDriver
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers._

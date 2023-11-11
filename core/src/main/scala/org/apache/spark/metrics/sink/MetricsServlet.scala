@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest
 import com.codahale.metrics.MetricRegistry
 import com.codahale.metrics.json.MetricsModule
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.eclipse.jetty.servlet.ServletContextHandler
+import org.eclipse.jetty.ee8.servlet.ServletContextHandler
 
 import org.apache.spark.SparkConf
 import org.apache.spark.ui.JettyUtils._
