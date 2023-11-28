@@ -2216,6 +2216,7 @@ private[spark] object Utils
 
   /**
    * Return whether the exception is caused by an address-port collision when binding.
+   * HF: Jetty 12 no longer throw multiException directly, hence the MultiException no longer needed.
    */
   def isBindCollision(exception: Throwable): Boolean = {
     exception match {
@@ -2224,8 +2225,6 @@ private[spark] object Utils
           return true
         }
         isBindCollision(e.getCause)
-      case e: MultiException =>
-        e.getThrowables.asScala.exists(isBindCollision)
       case e: NativeIoException =>
         (e.getMessage != null && e.getMessage.startsWith("bind() failed: ")) ||
           isBindCollision(e.getCause)
