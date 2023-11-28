@@ -40,12 +40,8 @@ import org.apache.spark.{SSLOptions, SecurityManager, SparkConf}
 import org.apache.spark.internal.Logging
 import org.apache.spark.internal.config.UI._
 import org.apache.spark.util.Utils
-import org.eclipse.jetty.server
-import org.eclipse.jetty.util.Callback
-import org.eclipse.jetty.ee8.nested.ErrorHandler
+import org.eclipse.jetty.ee8.nested.{ErrorHandler, HandlerWrapper,ContextHandler}
 
-import java.util
-import scala.jdk.CollectionConverters.SeqHasAsJava
 
 /**
  * Utilities for launching a web server using Jetty's HTTP Server class
@@ -376,8 +372,8 @@ private[spark] object JettyUtils extends Logging {
   private def createRedirectHttpsHandler(securePort: Int, scheme: String): ContextHandler = {
     val redirectHandler: ContextHandler = new ContextHandler
     redirectHandler.setContextPath("/")
-    redirectHandler.setVirtualHosts((toVirtualHosts(REDIRECT_CONNECTOR_NAME).toList.asJava))
-    redirectHandler.setHandler(new Handler.Abstract() {
+    redirectHandler.setVirtualHosts(toVirtualHosts(REDIRECT_CONNECTOR_NAME))
+    redirectHandler.setHandler(new org.eclipse.jetty.ee8.nested.Handler() {
       override def handle(
           target: String,
           baseRequest: Request,

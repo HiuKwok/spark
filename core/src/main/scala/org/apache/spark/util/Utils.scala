@@ -62,7 +62,6 @@ import org.apache.hadoop.yarn.conf.YarnConfiguration
 import org.apache.logging.log4j.{Level, LogManager}
 import org.apache.logging.log4j.core.LoggerContext
 import org.apache.logging.log4j.core.config.LoggerConfig
-import org.eclipse.jetty.util.MultiException
 import org.slf4j.Logger
 
 import org.apache.spark._

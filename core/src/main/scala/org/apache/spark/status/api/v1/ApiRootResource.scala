@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletRequest
 import javax.ws.rs._
 import javax.ws.rs.core.{Context, Response}
 
-import org.eclipse.jetty.server.handler.ContextHandler
 import org.eclipse.jetty.ee8.servlet.{ServletContextHandler, ServletHolder}
 import org.glassfish.jersey.server.ServerProperties
 import org.glassfish.jersey.servlet.ServletContainer
