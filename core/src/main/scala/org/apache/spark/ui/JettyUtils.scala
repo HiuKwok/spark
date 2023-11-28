@@ -42,6 +42,7 @@ import org.apache.spark.internal.config.UI._
 import org.apache.spark.util.Utils
 import org.eclipse.jetty.server
 import org.eclipse.jetty.util.Callback
+import org.eclipse.jetty.ee8.nested.ErrorHandler
 
 import java.util
 import scala.jdk.CollectionConverters.SeqHasAsJava
