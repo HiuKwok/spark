@@ -103,7 +103,7 @@ private[v1] object UIRootFromServletContext {
 
   private val attribute = getClass.getCanonicalName
 
-  def setUiRoot(contextHandler: ContextHandler, uiRoot: UIRoot): Unit = {
+  def setUiRoot(contextHandler: ServletContextHandler, uiRoot: UIRoot): Unit = {
     contextHandler.setAttribute(attribute, uiRoot)
   }
 
