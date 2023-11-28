@@ -21,11 +21,9 @@ import java.net.{URI, URL, URLDecoder}
 import java.util.EnumSet
 import javax.servlet.DispatcherType
 import javax.servlet.http._
-
 import scala.language.implicitConversions
 import scala.util.Try
 import scala.xml.Node
-
 import org.eclipse.jetty.client.HttpClient
 import org.eclipse.jetty.client.Response
 import org.eclipse.jetty.client.transport.HttpClientTransportOverHTTP
@@ -38,11 +36,15 @@ import org.eclipse.jetty.util.component.LifeCycle
 import org.eclipse.jetty.util.thread.{QueuedThreadPool, ScheduledExecutorScheduler}
 import org.json4s.JValue
 import org.json4s.jackson.JsonMethods.{pretty, render}
-
-import org.apache.spark.{SecurityManager, SparkConf, SSLOptions}
+import org.apache.spark.{SSLOptions, SecurityManager, SparkConf}
 import org.apache.spark.internal.Logging
 import org.apache.spark.internal.config.UI._
 import org.apache.spark.util.Utils
+import org.eclipse.jetty.server
+import org.eclipse.jetty.util.Callback
+
+import java.util
+import scala.jdk.CollectionConverters.SeqHasAsJava
 
 /**
  * Utilities for launching a web server using Jetty's HTTP Server class
@@ -373,8 +375,8 @@ private[spark] object JettyUtils extends Logging {
   private def createRedirectHttpsHandler(securePort: Int, scheme: String): ContextHandler = {
     val redirectHandler: ContextHandler = new ContextHandler
     redirectHandler.setContextPath("/")
-    redirectHandler.setVirtualHosts(toVirtualHosts(REDIRECT_CONNECTOR_NAME))
-    redirectHandler.setHandler(new AbstractHandler {
+    redirectHandler.setVirtualHosts((toVirtualHosts(REDIRECT_CONNECTOR_NAME).toList.asJava))
+    redirectHandler.setHandler(new Handler.Abstract() {
       override def handle(
           target: String,
           baseRequest: Request,
@@ -451,7 +453,7 @@ private[spark] object JettyUtils extends Logging {
 
   // Create a new URI from the arguments, handling IPv6 host encoding and default ports.
   private def createRedirectURI(scheme: String, port: Int, request: Request): String = {
-    val server = request.getServerName
+    val server = Request.getServerName(request);
     val redirectServer = if (server.contains(":") && !server.startsWith("[")) {
       s"[${server}]"
     } else {
