@@ -215,6 +215,17 @@ private[spark] object UIUtils extends Logging {
       .getOrElse("")
   }
 
+  def uiRootHandler(request: org.eclipse.jetty.server.Request): String = {
+    // Knox uses X-Forwarded-Context to notify the application the base path
+    val knoxBasePath = Option(request.getHeaders.get("X-Forwarded-Context"))
+    // SPARK-11484 - Use the proxyBase set by the AM, if not found then use env.
+    sys.props.get("spark.ui.proxyBase")
+      .orElse(sys.env.get("APPLICATION_WEB_PROXY_BASE"))
+      .orElse(knoxBasePath)
+      .getOrElse("")
+  }
+
+
   def prependBaseUri(
       request: HttpServletRequest,
       basePath: String = "",
