@@ -22,7 +22,6 @@ import java.util.EnumSet
 import javax.servlet.DispatcherType
 import javax.servlet.http._
 import scala.language.implicitConversions
-import scala.jdk.CollectionConverters._
 import scala.util.Try
 import scala.xml.Node
 import org.eclipse.jetty.client.HttpClient
@@ -43,9 +42,7 @@ import org.apache.spark.internal.config.UI._
 import org.apache.spark.util.Utils
 import org.eclipse.jetty.ee8.nested.{ContextHandler, ErrorHandler, Request}
 
-
-import scala.collection.convert.ImplicitConversions.`collection AsScalaIterable`
-
+import scala.jdk.CollectionConverters
 
 /**
  * Utilities for launching a web server using Jetty's HTTP Server class
