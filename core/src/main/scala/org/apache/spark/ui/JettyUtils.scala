@@ -42,7 +42,8 @@ import org.apache.spark.internal.config.UI._
 import org.apache.spark.util.Utils
 import org.eclipse.jetty.ee8.nested.{ContextHandler, ErrorHandler, Request}
 
-import scala.jdk.CollectionConverters
+import scala.jdk.CollectionConverters.ListHasAsScala
+
 
 /**
  * Utilities for launching a web server using Jetty's HTTP Server class
@@ -503,7 +504,7 @@ private[spark] case class ServerInfo(
   def removeHandler(handler: ServletContextHandler): Unit = synchronized {
     // Since addHandler() always adds a wrapping gzip handler, find the container handler
     // and remove it.
-    rootHandler.getHandlers()
+    rootHandler.getHandlers().asScala
       .find { h =>
         h.isInstanceOf[GzipHandler] && h.asInstanceOf[GzipHandler].getHandler() == handler
       }

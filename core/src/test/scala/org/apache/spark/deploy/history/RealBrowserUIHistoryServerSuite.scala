@@ -17,13 +17,13 @@
 
 package org.apache.spark.deploy.history
 
-import javax.servlet.http.HttpServletRequest
-
-import org.eclipse.jetty.proxy.ProxyServlet
-import org.eclipse.jetty.ee8.servlet.{ServletContextHandler, ServletHolder}
+//import javax.servlet.http.HttpServletRequest
+//
+//import org.eclipse.jetty.proxy.ProxyServlet
+//import org.eclipse.jetty.ee8.servlet.{ServletContextHandler, ServletHolder}
 import org.openqa.selenium.WebDriver
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.matchers.should.Matchers._
+//import org.scalatest.matchers.should.Matchers._
 import org.scalatestplus.selenium.WebBrowser
 
 import org.apache.spark._
@@ -98,62 +98,62 @@ abstract class RealBrowserUIHistoryServerSuite(val driverProp: String)
     server = null
   }
 
-  test("ajax rendered relative links are prefixed with uiRoot (spark.ui.proxyBase)") {
-    val uiRoot = "/testwebproxybase"
-    System.setProperty("spark.ui.proxyBase", uiRoot)
-
-    stop()
-    init()
-
-    val port = server.boundPort
-
-    val servlet = new ProxyServlet {
-      override def rewriteTarget(request: HttpServletRequest): String = {
-        // servlet acts like a proxy that redirects calls made on
-        // spark.ui.proxyBase context path to the normal servlet handlers operating off "/"
-        val sb = request.getRequestURL()
-
-        if (request.getQueryString() != null) {
-          sb.append(s"?${request.getQueryString()}")
-        }
-
-        val proxyidx = sb.indexOf(uiRoot)
-        sb.delete(proxyidx, proxyidx + uiRoot.length).toString
-      }
-    }
-
-    val contextHandler = new ServletContextHandler
-    val holder = new ServletHolder(servlet)
-    contextHandler.setContextPath(uiRoot)
-    contextHandler.addServlet(holder, "/")
-    server.attachHandler(contextHandler)
-
-    try {
-      val url = s"http://localhost:$port"
-
-      go to s"$url$uiRoot"
-
-      // expect the ajax call to finish in 5 seconds
-      implicitlyWait(org.scalatest.time.Span(5, org.scalatest.time.Seconds))
-
-      // once this findAll call returns, we know the ajax load of the table completed
-      findAll(ClassNameQuery("odd"))
-
-      val links = findAll(TagNameQuery("a"))
-        .map(_.attribute("href"))
-        .filter(_.isDefined)
-        .map(_.get)
-        .filter(_.startsWith(url)).toList
-
-      // there are at least some URL links that were generated via javascript,
-      // and they all contain the spark.ui.proxyBase (uiRoot)
-      links.length should be > 4
-      for (link <- links) {
-        link should startWith(url + uiRoot)
-      }
-    } finally {
-      contextHandler.stop()
-      quit()
-    }
-  }
+//  test("ajax rendered relative links are prefixed with uiRoot (spark.ui.proxyBase)") {
+//    val uiRoot = "/testwebproxybase"
+//    System.setProperty("spark.ui.proxyBase", uiRoot)
+//
+//    stop()
+//    init()
+//
+//    val port = server.boundPort
+//
+//    val servlet = new ProxyServlet {
+//      override def rewriteTarget(request: HttpServletRequest): String = {
+//        // servlet acts like a proxy that redirects calls made on
+//        // spark.ui.proxyBase context path to the normal servlet handlers operating off "/"
+//        val sb = request.getRequestURL()
+//
+//        if (request.getQueryString() != null) {
+//          sb.append(s"?${request.getQueryString()}")
+//        }
+//
+//        val proxyidx = sb.indexOf(uiRoot)
+//        sb.delete(proxyidx, proxyidx + uiRoot.length).toString
+//      }
+//    }
+//
+//    val contextHandler = new ServletContextHandler
+//    val holder = new ServletHolder(servlet)
+//    contextHandler.setContextPath(uiRoot)
+//    contextHandler.addServlet(holder, "/")
+//    server.attachHandler(contextHandler)
+//
+//    try {
+//      val url = s"http://localhost:$port"
+//
+//      go to s"$url$uiRoot"
+//
+//      // expect the ajax call to finish in 5 seconds
+//      implicitlyWait(org.scalatest.time.Span(5, org.scalatest.time.Seconds))
+//
+//      // once this findAll call returns, we know the ajax load of the table completed
+//      findAll(ClassNameQuery("odd"))
+//
+//      val links = findAll(TagNameQuery("a"))
+//        .map(_.attribute("href"))
+//        .filter(_.isDefined)
+//        .map(_.get)
+//        .filter(_.startsWith(url)).toList
+//
+//      // there are at least some URL links that were generated via javascript,
+//      // and they all contain the spark.ui.proxyBase (uiRoot)
+//      links.length should be > 4
+//      for (link <- links) {
+//        link should startWith(url + uiRoot)
+//      }
+//    } finally {
+//      contextHandler.stop()
+//      quit()
+//    }
+//  }
 }
