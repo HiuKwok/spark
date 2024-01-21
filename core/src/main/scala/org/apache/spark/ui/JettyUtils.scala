@@ -40,7 +40,7 @@ import org.apache.spark.{SSLOptions, SecurityManager, SparkConf}
 import org.apache.spark.internal.Logging
 import org.apache.spark.internal.config.UI._
 import org.apache.spark.util.Utils
-import org.eclipse.jetty.ee8.nested.{ContextHandler, ErrorHandler, Request}
+import org.eclipse.jetty.ee8.nested.{ContextHandler, ErrorHandler, HandlerWrapper, Request}
 
 import scala.jdk.CollectionConverters.ListHasAsScala
 
@@ -265,7 +265,7 @@ private[spark] object JettyUtils extends Logging {
     val collection = new ContextHandlerCollection
     conf.get(PROXY_REDIRECT_URI) match {
       case Some(proxyUri) =>
-        server.setHandler(collection)
+//        server.setHandler(collection)
         // The whole class should be replaced by a static method, send redirect().
 //        val proxyHandler = new ProxyRedirectHandler(proxyUri)
 //        proxyHandler.setHandler(collection)
@@ -577,36 +577,91 @@ private[spark] case class ServerInfo(
  * a servlet context without the trailing slash (e.g. "/jobs") - Jetty will send a redirect to the
  * same URL, but with a trailing slash.
  */
-//private class ProxyRedirectHandler(_proxyUri: String) extends Handler.Wrapper {
-//
-//  private val proxyUri = _proxyUri.stripSuffix("/")
-//
-//  override def handle(
-//      target: String,
-//      baseRequest: Request,
-//      request: HttpServletRequest,
-//      response: HttpServletResponse): Unit = {
-//    super.handle(target, baseRequest, request, new ResponseWrapper(request, response))
-//  }
-//
-//  private class ResponseWrapper(
-//      req: HttpServletRequest,
-//      res: HttpServletResponse)
-//    extends HttpServletResponseWrapper(res) {
-//
-//    override def sendRedirect(location: String): Unit = {
-//      val newTarget = if (location != null) {
-//        val target = new URI(location)
-//        // The target path should already be encoded, so don't re-encode it, just the
-//        // proxy address part.
-//        val proxyBase = UIUtils.uiRoot(req)
-//        val proxyPrefix = if (proxyBase.nonEmpty) s"$proxyUri$proxyBase" else proxyUri
-//        s"${res.encodeURL(proxyPrefix)}${target.getPath()}"
-//      } else {
-//        null
-//      }
-//      super.sendRedirect(newTarget)
-//    }
-//  }
-//
-//}
+private class ProxyRedirectHandler(_proxyUri: String) extends HandlerWrapper {
+
+  private val proxyUri = _proxyUri.stripSuffix("/")
+
+
+//   Should be (
+//    x$1: org.eclipse.jetty.server.Request,
+//    x$2: org.eclipse.jetty.server.Response,
+//    x$3: org.eclipse.jetty.util.Callback): Boolean
+//  [WARNING] one warning found
+  override def handle(
+      target: String,
+      baseRequest: Request,
+      request: HttpServletRequest,
+      response: HttpServletResponse): Unit = {
+    super.handle(target, baseRequest, request, new ResponseWrapper(request, response))
+  }
+
+  private class ResponseWrapper(
+      req: HttpServletRequest,
+      res: HttpServletResponse)
+    extends HttpServletResponseWrapper(res) {
+
+    override def sendRedirect(location: String): Unit = {
+      val newTarget = if (location != null) {
+        val target = new URI(location)
+        // The target path should already be encoded, so don't re-encode it, just the
+        // proxy address part.
+        val proxyBase = UIUtils.uiRoot(req)
+        val proxyPrefix = if (proxyBase.nonEmpty) s"$proxyUri$proxyBase" else proxyUri
+        s"${res.encodeURL(proxyPrefix)}${target.getPath()}"
+      } else {
+        null
+      }
+      super.sendRedirect(newTarget)
+    }
+  }
+
+  private class ProxyRedirectHandlerNew(_proxyUri: String) extends Handler.Wrapper {
+
+    private val proxyUri = _proxyUri.stripSuffix("/")
+
+
+    //   Should be (
+    //    x$1: org.eclipse.jetty.server.Request,
+    //    x$2: org.eclipse.jetty.server.Response,
+    //    x$3: org.eclipse.jetty.util.Callback): Boolean
+    //  [WARNING] one warning found
+    override def handle(
+                         request: org.eclipse.jetty.server.Request,
+                         response: org.eclipse.jetty.server.Response,
+                         callback: org.eclipse.jetty.util.Callback): Boolean = {
+
+
+//      val wrapper = new server.Response.Wrapper (request, response);
+      super.handle(request, response, callback)
+    }
+
+    private class ResponseWrapperNew(
+                                   req: org.eclipse.jetty.server.Request,
+                                   res: org.eclipse.jetty.server.Response)
+      extends org.eclipse.jetty.server.Response.Wrapper(req,res) {
+
+
+    }
+
+    private class ResponseWrapper(
+                                   req: HttpServletRequest,
+                                   res: HttpServletResponse)
+      extends HttpServletResponseWrapper(res) {
+
+      override def sendRedirect(location: String): Unit = {
+        val newTarget = if (location != null) {
+          val target = new URI(location)
+          // The target path should already be encoded, so don't re-encode it, just the
+          // proxy address part.
+          val proxyBase = UIUtils.uiRoot(req)
+          val proxyPrefix = if (proxyBase.nonEmpty) s"$proxyUri$proxyBase" else proxyUri
+          s"${res.encodeURL(proxyPrefix)}${target.getPath()}"
+        } else {
+          null
+        }
+        super.sendRedirect(newTarget)
+      }
+    }
+  }
+
+}
