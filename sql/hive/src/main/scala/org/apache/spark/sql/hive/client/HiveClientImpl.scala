@@ -858,9 +858,6 @@ private[hive] class HiveClientImpl(
       // Since HIVE-18238(Hive 3.0.0), the Driver.close function's return type changed
       // and the CommandProcessorFactory.clean function removed.
       driver.getClass.getMethod("close").invoke(driver)
-      if (version != hive.v3_0 && version != hive.v3_1) {
-        CommandProcessorFactory.clean(conf)
-      }
     }
 
     // Hive query needs to start SessionState.
@@ -1021,12 +1018,7 @@ private[hive] class HiveClientImpl(
       val t = table.getTableName
       logDebug(s"Deleting table $t")
       try {
-        shim.getIndexes(client, "default", t, 255).foreach { index =>
-          shim.dropIndex(client, "default", t, index.getIndexName)
-        }
-        if (!table.isIndexTable) {
           shim.dropTable(client, "default", t)
-        }
       } catch {
         case _: NoSuchMethodError =>
           // HIVE-18448 Hive 3.0 remove index APIs
