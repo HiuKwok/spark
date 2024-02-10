@@ -20,20 +20,18 @@ package org.apache.spark.sql.hive
 import java.io.File
 import java.net.URL
 import java.util.Locale
-
 import scala.collection.mutable.HashMap
 import scala.jdk.CollectionConverters._
 import scala.util.Try
-
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.hive.common.FileUtils
 import org.apache.hadoop.hive.conf.HiveConf
 import org.apache.hadoop.hive.conf.HiveConf.ConfVars
+import org.apache.hadoop.hive.metastore.conf.MetastoreConf
 import org.apache.hadoop.hive.ql.session.SessionState
 import org.apache.hadoop.util.VersionInfo
 import org.apache.hive.common.util.HiveVersionInfo
-
 import org.apache.spark.SparkConf
 import org.apache.spark.deploy.SparkHadoopUtil
 import org.apache.spark.internal.Logging
@@ -433,7 +431,7 @@ private[spark] object HiveUtils extends Logging {
       }
     }
     propMap.put(WAREHOUSE_PATH.key, localMetastore.toURI.toString)
-    propMap.put(HiveConf.ConfVars.METASTORECONNECTURLKEY.varname,
+    propMap.put(MetastoreConf.ConfVars.CONNECT_URL_KEY.getVarname,
       s"jdbc:derby:${withInMemoryMode};databaseName=${localMetastore.getAbsolutePath};create=true")
     propMap.put("datanucleus.rdbms.datastoreAdapterClassName",
       "org.datanucleus.store.rdbms.adapter.DerbyAdapter")
@@ -457,14 +455,14 @@ private[spark] object HiveUtils extends Logging {
     // You can search HiveConf.ConfVars.METASTOREURIS in the code of HiveConf (in Hive's repo).
     // Then, you will find that the local metastore mode is only set to true when
     // hive.metastore.uris is not set.
-    propMap.put(ConfVars.METASTOREURIS.varname, "")
+    propMap.put(MetastoreConf.ConfVars.THRIFT_URIS.getVarname, "")
 
     // The execution client will generate garbage events, therefore the listeners that are generated
     // for the execution clients are useless. In order to not output garbage, we don't generate
     // these listeners.
-    propMap.put(ConfVars.METASTORE_PRE_EVENT_LISTENERS.varname, "")
-    propMap.put(ConfVars.METASTORE_EVENT_LISTENERS.varname, "")
-    propMap.put(ConfVars.METASTORE_END_FUNCTION_LISTENERS.varname, "")
+    propMap.put(MetastoreConf.ConfVars.PRE_EVENT_LISTENERS.getVarname, "")
+    propMap.put(MetastoreConf.ConfVars.EVENT_LISTENERS.getVarname, "")
+    propMap.put(MetastoreConf.ConfVars.END_FUNCTION_LISTENERS.getVarname, "")
 
     // SPARK-21451: Spark will gather all `spark.hadoop.*` properties from a `SparkConf` to a
     // Hadoop Configuration internally, as long as it happens after SparkContext initialized.
