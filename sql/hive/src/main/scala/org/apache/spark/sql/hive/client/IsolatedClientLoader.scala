@@ -21,14 +21,11 @@ import java.io.{File, PrintStream}
 import java.lang.reflect.InvocationTargetException
 import java.net.{URL, URLClassLoader}
 import java.util
-
 import scala.util.Try
-
 import org.apache.commons.io.{FileUtils, IOUtils}
 import org.apache.hadoop.conf.Configuration
-import org.apache.hadoop.hive.conf.HiveConf.ConfVars
+import org.apache.hadoop.hive.metastore.conf.MetastoreConf
 import org.apache.hadoop.hive.shims.ShimLoader
-
 import org.apache.spark.SparkConf
 import org.apache.spark.deploy.SparkSubmit
 import org.apache.spark.internal.Logging
@@ -289,7 +286,7 @@ private[hive] class IsolatedClientLoader(
 
   /** The isolated client interface to Hive. */
   private[hive] def createClient(): HiveClient = synchronized {
-    val warehouseDir = Option(hadoopConf.get(ConfVars.METASTOREWAREHOUSE.varname))
+    val warehouseDir = Option(MetastoreConf.getVar(hadoopConf, MetastoreConf.ConfVars.WAREHOUSE))
     if (!isolationOn) {
       return new HiveClientImpl(version, warehouseDir, sparkConf, hadoopConf, config,
         baseClassLoader, this)

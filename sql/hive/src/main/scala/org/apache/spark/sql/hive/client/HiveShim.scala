@@ -19,16 +19,15 @@ package org.apache.spark.sql.hive.client
 
 import java.lang.{Boolean => JBoolean, Integer => JInteger, Long => JLong}
 import java.lang.reflect.{InvocationTargetException, Method}
-import java.util.{ArrayList => JArrayList, List => JList, Locale, Map => JMap}
+import java.util.{Locale, ArrayList => JArrayList, List => JList, Map => JMap}
 import java.util.concurrent.TimeUnit
-
 import scala.jdk.CollectionConverters._
 import scala.util.control.NonFatal
-
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.hive.conf.HiveConf
 import org.apache.hadoop.hive.metastore.{IMetaStoreClient, PartitionDropOptions, TableType}
-import org.apache.hadoop.hive.metastore.api.{Database, EnvironmentContext, Function => HiveFunction, FunctionType, MetaException, PrincipalType, ResourceType, ResourceUri}
+import org.apache.hadoop.hive.metastore.api.{Database, EnvironmentContext, FunctionType, MetaException, PrincipalType, ResourceType, ResourceUri, Function => HiveFunction}
+import org.apache.hadoop.hive.metastore.conf.MetastoreConf
 import org.apache.hadoop.hive.ql.Driver
 import org.apache.hadoop.hive.ql.io.AcidUtils
 import org.apache.hadoop.hive.ql.metadata.{Hive, HiveException, Partition, Table}
@@ -36,7 +35,6 @@ import org.apache.hadoop.hive.ql.plan.AddPartitionDesc
 import org.apache.hadoop.hive.ql.processors.{CommandProcessor, CommandProcessorFactory}
 import org.apache.hadoop.hive.ql.session.SessionState
 import org.apache.hadoop.hive.serde.serdeConstants
-
 import org.apache.spark.internal.Logging
 import org.apache.spark.metrics.source.HiveCatalogMetrics
 import org.apache.spark.sql.catalyst.{FunctionIdentifier, InternalRow}
@@ -344,7 +342,7 @@ private[client] class Shim_v2_0 extends Shim with Logging {
         prunePartitionsFastFallback(hive, table, catalogTable, predicates)
       } else {
         logDebug(s"Hive metastore filter is '$filter'.")
-        val tryDirectSqlConfVar = HiveConf.ConfVars.METASTORE_TRY_DIRECT_SQL
+        val tryDirectSqlConfVar = MetastoreConf.ConfVars.TRY_DIRECT_SQL
         val shouldFallback = SQLConf.get.metastorePartitionPruningFallbackOnException
         try {
           // Hive may throw an exception when calling this method in some circumstances, such as
@@ -363,7 +361,7 @@ private[client] class Shim_v2_0 extends Shim with Logging {
             logWarning("Caught Hive MetaException attempting to get partition metadata by " +
               "filter from Hive. Falling back to fetching all partition metadata, which will " +
               "degrade performance. Modifying your Hive metastore configuration to set " +
-              s"${tryDirectSqlConfVar.varname} to true (if it is not true already) may resolve " +
+              s"${tryDirectSqlConfVar.name()} to true (if it is not true already) may resolve " +
               "this problem. Or you can enable " +
               s"${SQLConf.HIVE_METASTORE_PARTITION_PRUNING_FAST_FALLBACK.key} " +
               "to alleviate performance downgrade. " +
@@ -452,7 +450,7 @@ private[client] class Shim_v2_0 extends Shim with Logging {
   }
 
   override def getMetastoreClientConnectRetryDelayMillis(conf: HiveConf): Long =
-    conf.getTimeVar(HiveConf.ConfVars.METASTORE_CLIENT_CONNECT_RETRY_DELAY, TimeUnit.MILLISECONDS)
+    MetastoreConf.getTimeVar(conf, MetastoreConf.ConfVars.SCHEMA_VERIFICATION, TimeUnit.MILLISECONDS)
 
   override def getTablesByType(
       hive: Hive,
