@@ -490,7 +490,7 @@ private[hive] object HadoopTableReader extends HiveInspectors with Logging {
             row.setLong(ordinal, DateTimeUtils.fromJavaTimestamp(oi.getPrimitiveJavaObject(value).toSqlTimestamp))
         case oi: DateObjectInspector =>
           (value: Any, row: InternalRow, ordinal: Int) =>
-            row.setInt(ordinal, DateTimeUtils.fromJavaDate(oi.getPrimitiveJavaObject(value).toEpochMilli))
+            row.setInt(ordinal, DateTimeUtils.fromMillsUtc(oi.getPrimitiveJavaObject(value).toEpochMilli))
         case oi: BinaryObjectInspector =>
           (value: Any, row: InternalRow, ordinal: Int) =>
             row.update(ordinal, oi.getPrimitiveJavaObject(value))

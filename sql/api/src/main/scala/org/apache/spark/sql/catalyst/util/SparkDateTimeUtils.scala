@@ -191,10 +191,10 @@ trait SparkDateTimeUtils {
    * @return The number of days since the epoch in Proleptic Gregorian calendar.
    */
   def fromJavaDate(date: Date): Int = {
-    fromJavaDate(date.getTime);
+    fromMillsUtc(date.getTime);
   }
 
-  def fromJavaDate(millisUtc: Long): Int = {
+  def fromMillsUtc(millisUtc: Long): Int = {
     val millisLocal = millisUtc + TimeZone.getDefault.getOffset(millisUtc)
     val julianDays = Math.toIntExact(Math.floorDiv(millisLocal, MILLIS_PER_DAY))
     rebaseJulianToGregorianDays(julianDays)
