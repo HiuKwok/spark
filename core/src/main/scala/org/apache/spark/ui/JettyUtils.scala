@@ -19,9 +19,11 @@ package org.apache.spark.ui
 
 import java.net.{URI, URL, URLDecoder}
 import java.util.EnumSet
+
 import scala.language.implicitConversions
 import scala.util.Try
 import scala.xml.Node
+
 import jakarta.servlet.DispatcherType
 import jakarta.servlet.http._
 import org.eclipse.jetty.client.HttpClient

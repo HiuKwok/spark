@@ -174,7 +174,7 @@ class ArtifactManager(session: SparkSession) extends Logging {
         }
       } else if (remoteRelativePath.startsWith(s"archives${File.separator}")) {
         val canonicalUri =
-          fragment.map(UriBuilder.fromUri(new URI(uri)).fragment).getOrElse(new URI(uri))
+          fragment.map(Utils.getUriBuilder(new URI(uri)).fragment).getOrElse(new URI(uri))
         session.sparkContext.addArchive(canonicalUri.toString)
       } else if (remoteRelativePath.startsWith(s"files${File.separator}")) {
         session.sparkContext.addFile(uri)

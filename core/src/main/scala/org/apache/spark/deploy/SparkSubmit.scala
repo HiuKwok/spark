@@ -409,7 +409,7 @@ private[spark] class SparkSubmit extends Logging {
           val resolvedUris = Utils.stringToSeq(uris).map(Utils.resolveURI)
           val localResources = downloadFileList(
             resolvedUris.map(
-              UriBuilder.fromUri(_).fragment(null).build().toString).mkString(","),
+              Utils.getUriBuilder(_).fragment(null).build().toString).mkString(","),
             targetDir, sparkConf, hadoopConf)
           Utils.stringToSeq(localResources).map(Utils.resolveURI).zip(resolvedUris).map {
             case (localResources, resolvedUri) =>
@@ -426,7 +426,7 @@ private[spark] class SparkSubmit extends Logging {
                 Files.copy(source.toPath, dest.toPath)
               }
               // Keep the URIs of local files with the given fragments.
-              UriBuilder.fromUri(
+              Utils.getUriBuilder(
                 localResources).fragment(resolvedUri.getFragment).build().toString
           }.mkString(",")
         }
