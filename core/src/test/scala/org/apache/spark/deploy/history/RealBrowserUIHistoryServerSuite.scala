@@ -18,7 +18,7 @@
 package org.apache.spark.deploy.history
 
 import jakarta.servlet.http.HttpServletRequest
-import org.eclipse.jetty.proxy.ProxyServlet
+import org.eclipse.jetty.ee10.proxy.ProxyServlet
 import org.eclipse.jetty.ee10.servlet.{ServletContextHandler, ServletHolder}
 import org.openqa.selenium.WebDriver
 import org.scalatest.concurrent.Eventually._

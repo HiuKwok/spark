@@ -20,6 +20,7 @@ package org.apache.spark.ui
 import java.net.{URI, URL, URLDecoder}
 import java.util.EnumSet
 
+import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
 import scala.util.Try
 import scala.xml.Node
@@ -27,25 +28,24 @@ import scala.xml.Node
 import jakarta.servlet.DispatcherType
 import jakarta.servlet.http._
 import org.eclipse.jetty.client.HttpClient
-import org.eclipse.jetty.client.Response
 import org.eclipse.jetty.client.transport.HttpClientTransportOverHTTP
 import org.eclipse.jetty.ee10.proxy.ProxyServlet
+import org.eclipse.jetty.ee10.servlet.{DefaultServlet, FilterHolder, ServletContextHandler, ServletHolder}
+import org.eclipse.jetty.http.HttpHeader
 import org.eclipse.jetty.server._
 import org.eclipse.jetty.server.handler._
 import org.eclipse.jetty.server.handler.gzip.GzipHandler
-import org.eclipse.jetty.ee10.servlet.{DefaultServlet, FilterHolder, ServletContextHandler, ServletHolder}
+import org.eclipse.jetty.util.Callback
 import org.eclipse.jetty.util.component.LifeCycle
 import org.eclipse.jetty.util.thread.{QueuedThreadPool, ScheduledExecutorScheduler}
 import org.json4s.JValue
 import org.json4s.jackson.JsonMethods.{pretty, render}
-import org.apache.spark.{SSLOptions, SecurityManager, SparkConf}
+
 import org.apache.spark.internal.Logging
 import org.apache.spark.internal.config.UI._
+import org.apache.spark.{SecurityManager, SparkConf, SSLOptions}
 import org.apache.spark.util.Utils
-import org.eclipse.jetty.util.Callback
 
-import scala.collection.convert.ImplicitConversions.`collection AsScalaIterable`
-import scala.jdk.CollectionConverters.SeqHasAsJava
 
 /**
  * Utilities for launching a web server using Jetty's HTTP Server class
@@ -212,12 +212,12 @@ private[spark] object JettyUtils extends Logging {
 
       override def filterServerResponseHeader(
           clientRequest: HttpServletRequest,
-          serverResponse: Response,
+          serverResponse: org.eclipse.jetty.client.Response,
           headerName: String,
           headerValue: String): String = {
         if (headerName.equalsIgnoreCase("location")) {
           val newHeader = createProxyLocationHeader(headerValue, clientRequest,
-            serverResponse.getRequest().getURI())
+            serverResponse.getRequest.getURI)
           if (newHeader != null) {
             return newHeader
           }
@@ -393,14 +393,16 @@ private[spark] object JettyUtils extends Logging {
     redirectHandler.setVirtualHosts(toVirtualHosts(REDIRECT_CONNECTOR_NAME).asJava)
     redirectHandler.setHandler(new Handler.Abstract {
       override def handle(
-          target: String,
-          baseRequest: Request,
-          request: HttpServletRequest,
-          response: HttpServletResponse): Unit = {
-        if (baseRequest.isSecure) return
-        val httpsURI = createRedirectURI(scheme, securePort, baseRequest)
-        response.setContentLength(0)
-        response.sendRedirect(response.encodeRedirectURL(httpsURI))
+          request: Request,
+          response: Response,
+          callback: Callback): Boolean = {
+        if (request.isSecure) return false
+        val httpsURI = createRedirectURI(scheme, securePort, request)
+        val responseHeaders = response.getHeaders
+        responseHeaders.put(HttpHeader.CONTENT_LENGTH, 0L)
+        val location = Response.toRedirectURI(request, httpsURI);
+        Response.sendRedirect(request, response, callback, location)
+        true
       }
     })
     redirectHandler
@@ -507,7 +509,7 @@ private[spark] case class ServerInfo(
   def removeHandler(handler: ServletContextHandler): Unit = synchronized {
     // Since addHandler() always adds a wrapping gzip handler, find the container handler
     // and remove it.
-    rootHandler.getHandlers()
+    rootHandler.getHandlers.asScala
       .find { h =>
         h.isInstanceOf[GzipHandler] && h.asInstanceOf[GzipHandler].getHandler() == handler
       }
@@ -587,7 +589,7 @@ private class ProxyRedirectHandler(_proxyUri: String) extends Handler.Wrapper {
   override def handle(
       request: Request,
       response: org.eclipse.jetty.server.Response,
-      callback: Callback): Unit = {
+      callback: Callback): Boolean = {
     // Todo: Fix the proxy redirect behaviour.
 //    super.handle(request, new ResponseWrapper(request, response), callback)
     super.handle(request,response, callback)

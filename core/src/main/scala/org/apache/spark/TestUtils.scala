@@ -20,21 +20,23 @@ package org.apache.spark
 import java.io.{ByteArrayInputStream, File, FileInputStream, FileOutputStream}
 import java.net.{HttpURLConnection, InetSocketAddress, URL}
 import java.nio.charset.StandardCharsets
-import java.nio.file.{Paths, Files => JavaFiles}
+import java.nio.file.{Files => JavaFiles, Paths}
 import java.nio.file.attribute.PosixFilePermission.{OWNER_EXECUTE, OWNER_READ, OWNER_WRITE}
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import java.util.{EnumSet, Locale}
-import java.util.concurrent.{TimeUnit, TimeoutException}
+import java.util.concurrent.{TimeoutException, TimeUnit}
 import java.util.jar.{JarEntry, JarOutputStream, Manifest}
 import java.util.regex.Pattern
 import javax.net.ssl._
+
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
-import scala.reflect.{ClassTag, classTag}
+import scala.reflect.{classTag, ClassTag}
 import scala.sys.process.Process
 import scala.util.Try
+
 import com.google.common.io.{ByteStreams, Files}
 import org.apache.commons.lang3.StringUtils
 import org.apache.logging.log4j.LogManager
@@ -45,12 +47,14 @@ import org.eclipse.jetty.server.Handler
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.handler.DefaultHandler
 import org.eclipse.jetty.server.handler.ResourceHandler
+import org.eclipse.jetty.util.resource.ResourceFactory
 import org.json4s.JsonAST.JValue
 import org.json4s.jackson.JsonMethods.{compact, render}
+
 import org.apache.spark.executor.TaskMetrics
 import org.apache.spark.scheduler._
 import org.apache.spark.util.{SparkTestUtils, Utils}
-import org.eclipse.jetty.util.resource.ResourceFactory
+
 
 /**
  * Utilities for tests. Included in main codebase since it's used by multiple
