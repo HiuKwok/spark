@@ -41,9 +41,9 @@ import org.eclipse.jetty.util.thread.{QueuedThreadPool, ScheduledExecutorSchedul
 import org.json4s.JValue
 import org.json4s.jackson.JsonMethods.{pretty, render}
 
+import org.apache.spark.{SecurityManager, SparkConf, SSLOptions}
 import org.apache.spark.internal.Logging
 import org.apache.spark.internal.config.UI._
-import org.apache.spark.{SecurityManager, SparkConf, SSLOptions}
 import org.apache.spark.util.Utils
 
 
@@ -592,7 +592,7 @@ private class ProxyRedirectHandler(_proxyUri: String) extends Handler.Wrapper {
       callback: Callback): Boolean = {
     // Todo: Fix the proxy redirect behaviour.
 //    super.handle(request, new ResponseWrapper(request, response), callback)
-    super.handle(request,response, callback)
+    super.handle(request, response, callback)
   }
 //
 //  private class ResponseWrapper(
