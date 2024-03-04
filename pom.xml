@@ -144,7 +144,7 @@
     <orc.version>1.9.2</orc.version>
     <orc.classifier>shaded-protobuf</orc.classifier>
     <jetty.version>12.0.6</jetty.version>
-    <jakartaservlet.version>5.0.0</jakartaservlet.version>
+    <jakartaservlet.version>6.0.0</jakartaservlet.version>
     <!-- SPARK-46938: Required by Hive / LibThrift libs -->
     <javaxservlet.version>4.0.1</javaxservlet.version>
     <chill.version>0.10.0</chill.version>
@@ -201,7 +201,7 @@
     <datanucleus-core.version>4.1.17</datanucleus-core.version>
     <guava.version>14.0.1</guava.version>
     <janino.version>3.1.9</janino.version>
-    <jersey.version>3.0.12</jersey.version>
+    <jersey.version>3.1.5</jersey.version>
     <joda.version>2.12.7</joda.version>
     <jodd.version>3.5.2</jodd.version>
     <jsr305.version>3.0.0</jsr305.version>
