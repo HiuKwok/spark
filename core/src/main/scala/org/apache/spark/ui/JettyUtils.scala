@@ -151,6 +151,7 @@ private[spark] object JettyUtils extends Logging {
         // Make sure we don't end up with "//" in the middle
         val newUrl = new URL(new URL(request.getRequestURL.toString), prefixedDestPath).toString
         response.sendRedirect(newUrl)
+//        Response.sendRedirect(request, response, callback, location)
       }
       // SPARK-5983 ensure TRACE is not supported
       protected override def doTrace(req: HttpServletRequest, res: HttpServletResponse): Unit = {
@@ -572,6 +573,12 @@ private[spark] case class ServerInfo(
   }
 
 }
+
+//  private def getRedirectUrl(location: String): Unit = {
+//
+//    val proxyUri = _proxyUri.stripSuffix("/")
+//
+//  }
 
 /**
  * A Jetty handler to handle redirects to a proxy server. It intercepts redirects and rewrites the
