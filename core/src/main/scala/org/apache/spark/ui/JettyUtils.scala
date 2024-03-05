@@ -19,12 +19,10 @@ package org.apache.spark.ui
 
 import java.net.{URI, URL, URLDecoder}
 import java.util.EnumSet
-
 import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
 import scala.util.Try
 import scala.xml.Node
-
 import jakarta.servlet.DispatcherType
 import jakarta.servlet.http._
 import org.eclipse.jetty.client.HttpClient
@@ -35,16 +33,17 @@ import org.eclipse.jetty.http.HttpHeader
 import org.eclipse.jetty.server._
 import org.eclipse.jetty.server.handler._
 import org.eclipse.jetty.server.handler.gzip.GzipHandler
-import org.eclipse.jetty.util.Callback
+import org.eclipse.jetty.util.{Callback, UrlEncoded}
 import org.eclipse.jetty.util.component.LifeCycle
 import org.eclipse.jetty.util.thread.{QueuedThreadPool, ScheduledExecutorScheduler}
 import org.json4s.JValue
 import org.json4s.jackson.JsonMethods.{pretty, render}
-
-import org.apache.spark.{SecurityManager, SparkConf, SSLOptions}
+import org.apache.spark.{SSLOptions, SecurityManager, SparkConf}
 import org.apache.spark.internal.Logging
 import org.apache.spark.internal.config.UI._
 import org.apache.spark.util.Utils
+
+import java.nio.charset.Charset
 
 
 /**
@@ -457,7 +456,7 @@ private[spark] object JettyUtils extends Logging {
     handler.addFilter(holder, "/*", EnumSet.allOf(classOf[DispatcherType]))
   }
 
-  private def decodeURL(url: String, encoding: String): String = {
+  private def decodeURL(url: String, encoding: Charset): String = {
     if (url == null) {
       null
     } else {
@@ -473,9 +472,10 @@ private[spark] object JettyUtils extends Logging {
     } else {
       server
     }
+    request.getHttpURI.getDecodedPath
     val authority = s"$redirectServer:$port"
     val requestURI = request.getHttpURI.getDecodedPath
-    val queryString = request.getHttpURI.getQuery
+    val queryString = decodeURL(request.getHttpURI.getQuery, UrlEncoded.ENCODING)
     new URI(scheme, authority, requestURI, queryString, null).toString
   }
 
