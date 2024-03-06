@@ -598,14 +598,14 @@ private class ProxyRedirectHandler(_proxyUri: String) extends Handler.Wrapper {
       response: org.eclipse.jetty.server.Response,
       callback: Callback): Boolean = {
     // Todo: Fix the proxy redirect behaviour.
-//    super.handle(request, new ResponseWrapper(request, response), callback)
+    super.handle(request, new ResponseWrapper(request, response), callback)
     super.handle(request, response, callback)
   }
 //
 //  private class ResponseWrapper(
 //      req: Request,
 //      res: Response)
-//    extends HttpServletResponseWrapper(res) {
+//    extends Response.Wrapper(req, res) {
 //
 //    override def sendRedirect(location: String): Unit = {
 //      val newTarget = if (location != null) {
