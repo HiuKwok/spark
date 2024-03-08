@@ -18,11 +18,14 @@
 package org.apache.spark.ui
 
 import java.net.{URI, URL, URLDecoder}
+import java.nio.charset.Charset
 import java.util.EnumSet
+
 import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
 import scala.util.Try
 import scala.xml.Node
+
 import jakarta.servlet.DispatcherType
 import jakarta.servlet.http._
 import org.eclipse.jetty.client.HttpClient
@@ -38,13 +41,11 @@ import org.eclipse.jetty.util.component.LifeCycle
 import org.eclipse.jetty.util.thread.{QueuedThreadPool, ScheduledExecutorScheduler}
 import org.json4s.JValue
 import org.json4s.jackson.JsonMethods.{pretty, render}
-import org.apache.spark.{SSLOptions, SecurityManager, SparkConf}
+
+import org.apache.spark.{SecurityManager, SparkConf, SSLOptions}
 import org.apache.spark.internal.Logging
 import org.apache.spark.internal.config.UI._
 import org.apache.spark.util.Utils
-
-import java.nio.charset.Charset
-
 
 /**
  * Utilities for launching a web server using Jetty's HTTP Server class
@@ -598,7 +599,7 @@ private class ProxyRedirectHandler(_proxyUri: String) extends Handler.Wrapper {
       response: org.eclipse.jetty.server.Response,
       callback: Callback): Boolean = {
     // Todo: Fix the proxy redirect behaviour.
-    super.handle(request, new ResponseWrapper(request, response), callback)
+//    super.handle(request, new ResponseWrapper(request, response), callback)
     super.handle(request, response, callback)
   }
 //
